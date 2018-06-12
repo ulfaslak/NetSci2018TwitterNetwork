@@ -131,7 +131,7 @@ var steps = brush_width / 10;
       d3.select(brush_svg)
         .call(brush)
         .transition()
-        .call(brush.move, [0, brush_width]);
+        .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
     }
     inc += 1;
     if (--i) {          // If i > 0, keep going
