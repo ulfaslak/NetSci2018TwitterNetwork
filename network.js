@@ -36,7 +36,7 @@ simulation.force("y").strength(0.05);
 tmin = new Date("2018-05-28 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
-d3.csv("data/links_likes.csv", function(data){
+d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw/a149173d65ffa957ff8e054ac54326fbc4181071/links_likes.csv", function(data){
 	
 	// Convert links to graph
 	var data = data
@@ -94,6 +94,29 @@ d3.csv("data/links_likes.csv", function(data){
     .call(brush)
     .call(brush.move, [parseInt(brush_width * 0.1), parseInt(brush_width * 0.9)]);
   
+  // Animate brush movement
+  var inc = 0;
+  var steps = brush_width / 100;
+  (function theLoop (i) {
+    setTimeout(function () {
+      if (inc < 94) {
+        brush_svg
+          .call(brush)
+          .transition().duration(20)
+          .call(brush.move, [inc*steps, inc*steps+10*steps]);
+      } else if (inc == 94){
+        brush_svg
+          .call(brush)
+          .transition()
+          .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
+      }
+      inc += 1;
+      if (--i) {          // If i > 0, keep going
+        theLoop(i);       // Call the loop again, and pass it the current value of i
+      }
+    }, 20);
+  })(95);
+
   function ticked() {
     context.clearRect(0, 0, canvas_width, canvas_height);
       
@@ -115,30 +138,6 @@ d3.csv("data/links_likes.csv", function(data){
     return simulation.find(d3.event.x, d3.event.y);
   }
 })
-
-var inc = 0;
-var steps = brush_width / 100;
-setTimeout(function() {
-  (function theLoop (i) {
-    setTimeout(function () {
-      if (inc < 94) {
-        brush_svg
-          .call(brush)
-          .transition().duration(20)
-          .call(brush.move, [inc*steps, inc*steps+10*steps]);
-      } else if (inc == 94){
-        brush_svg
-          .call(brush)
-          .transition()
-          .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
-      }
-      inc += 1;
-      if (--i) {          // If i > 0, keep going
-        theLoop(i);       // Call the loop again, and pass it the current value of i
-      }
-    }, 20);
-  })(95);
-}, 100)
 
 
 // Network functions
