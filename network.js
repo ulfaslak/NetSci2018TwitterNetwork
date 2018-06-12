@@ -36,7 +36,7 @@ simulation.force("y").strength(0.05);
 tmin = new Date("2018-05-28 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
-d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw/a149173d65ffa957ff8e054ac54326fbc4181071/links_likes.csv", function(data){
+d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw", function(data){
 	
 	// Convert links to graph
 	var data = data
