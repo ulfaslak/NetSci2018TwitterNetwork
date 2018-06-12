@@ -7,11 +7,11 @@ context = canvas.getContext("2d")
 var canvas_width = canvas.width
 var canvas_height = canvas.height
 
-// Brush div
-var brush_svg = document.getElementById("brush")
+// Brush stuff
+var brush_svg = d3.select(document.getElementById("brush")).append("g")
 var brush_div = document.getElementsByClassName("brush_container")[0]
-var brush_width = brush_div.offsetWidth
-var brush_height = brush_div.offsetHeight * 0.8
+var brush_width = brush_div.offsetWidth - 5
+var brush_height = brush_div.offsetHeight * 1.0
 
 // Retina canvas rendering    
 var devicePixelRatio = window.devicePixelRatio || 1
@@ -36,7 +36,7 @@ simulation.force("y").strength(0.05);
 tmin = new Date("2018-05-28 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
-d3.csv("links_likes.csv", function(data){
+d3.csv("data/links_likes.csv", function(data){
 	
 	// Convert links to graph
 	var data = data
@@ -66,9 +66,9 @@ d3.csv("links_likes.csv", function(data){
     .domain([_.min(dates), _.max(dates)])
     .rangeRound([0, brush_width]);
 
-  d3.select(brush_svg).append("g")
+  brush_svg.append("g")
     .attr("class", "axis axis--grid")
-    .attr("transform", "translate(0," + brush_height + ")")
+    .attr("transform", "translate(0," + brush_height * 0.6 + ")")
     .call(d3.axisBottom(x)
       .ticks(d3.timeHour, 12) // 12
       .tickSize(-brush_height)
@@ -76,26 +76,24 @@ d3.csv("links_likes.csv", function(data){
     .selectAll(".tick")
       .classed("tick--minor", function(d) { return d.getHours(); });
 
-  d3.select(brush_svg).append("g")
+  brush_svg.append("g")
     .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + brush_height + ")")
+    .attr("transform", "translate(0," + brush_height * 0.6 + ")")
     .call(d3.axisBottom(x)
       .ticks(d3.timeDay)
       .tickPadding(0))
     .attr("text-anchor", null)
     .selectAll("text")
-    .attr("x", 1);
+    .attr("x", 5);
 
   brush = d3.brushX()
     .extent([[0, 0], [brush_width, brush_height]])
     .on("brush", brushed)
 
-  d3.select(brush_svg).append("g")
+  brush_svg.append("g")
     .call(brush)
-    //.call(brush.move, [brush_width / 1.5, brush_width - 10]);
-    .call(brush.move, x.range());
+    .call(brush.move, [parseInt(brush_width * 0.1), parseInt(brush_width * 0.9)]);
   
-
   function ticked() {
     context.clearRect(0, 0, canvas_width, canvas_height);
       
@@ -119,26 +117,28 @@ d3.csv("links_likes.csv", function(data){
 })
 
 var inc = 0;
-var steps = brush_width / 10;
-(function theLoop (i) {
-  setTimeout(function () {
-    if (inc < 10) {
-      d3.select(brush_svg)
-        .call(brush)
-        .transition()
-        .call(brush.move, [inc*steps, inc*steps+steps]);
-    } else if (inc == 10){
-      d3.select(brush_svg)
-        .call(brush)
-        .transition()
-        .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
-    }
-    inc += 1;
-    if (--i) {          // If i > 0, keep going
-      theLoop(i);       // Call the loop again, and pass it the current value of i
-    }
-  }, 500);
-})(11);
+var steps = brush_width / 100;
+setTimeout(function() {
+  (function theLoop (i) {
+    setTimeout(function () {
+      if (inc < 94) {
+        brush_svg
+          .call(brush)
+          .transition().duration(20)
+          .call(brush.move, [inc*steps, inc*steps+10*steps]);
+      } else if (inc == 94){
+        brush_svg
+          .call(brush)
+          .transition()
+          .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
+      }
+      inc += 1;
+      if (--i) {          // If i > 0, keep going
+        theLoop(i);       // Call the loop again, and pass it the current value of i
+      }
+    }, 20);
+  })(95);
+}, 100)
 
 
 // Network functions

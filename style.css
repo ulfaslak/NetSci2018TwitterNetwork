@@ -30,7 +30,7 @@
 }
 
 #brush {
-	width: calc(595 * 1.0px);
+	width: calc((600-5) * 1.0px);
 	height: calc(80 * 1.0px);
 
 }
@@ -64,9 +64,9 @@ p.sidebar-text {
 
 .axis--x .domain,
 .axis--grid .tick line {
-  stroke: #fff;
+  stroke: white;
 }
 
 .axis--grid .tick--minor line {
-  stroke-opacity: .5;
+  stroke-opacity: 0.5;
 }
