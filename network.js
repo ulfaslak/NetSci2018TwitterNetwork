@@ -186,7 +186,11 @@ function drawNode(d) {
   context.beginPath();
   context.moveTo(d.x + thisnodesize, d.y);
   context.arc(d.x, d.y, thisnodesize, 0, 2 * Math.PI);
-  context.fillStyle = "black";
+  if (d.id == focusLabel) {
+    context.fillStyle = "#2980b9"
+  } else {
+    context.fillStyle = "black";
+  }
   context.fill();
   context.stroke();
 }
@@ -195,15 +199,15 @@ function drawLabel(d) {
   if (d.id == focusLabel) {
     thisnodesize = d.size**(0.5) * 2;
     context.beginPath();
-    context.rect(d.x, d.y - 23, d.id.length*11, 20);
+    context.rect(d.x, d.y - 30, d.id.length*12, 25);
     context.fillStyle = "white";
     context.fill()
     context.stroke()
     context.beginPath()
     context.fillStyle = "black";
     context.font = "20px Georgia";
-    context.moveTo(d.x+10, d.y-5);
-    context.fillText(d.id, d.x, d.y-5);
+    context.moveTo(d.x+10, d.y-10);
+    context.fillText(d.id, d.x+10, d.y-10);
     context.stroke();
   }
 }
