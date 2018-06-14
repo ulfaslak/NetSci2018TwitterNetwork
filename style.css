@@ -1,6 +1,6 @@
 .parent_div {
-	width: calc(950 * 1.0px);
-	height: calc(700 * 1.0px);
+	width: calc(950 * 1.2px);
+	height: calc(700 * 1.2px);
 	position: absolute;
 	margin: auto;
 	top: 0;
@@ -10,45 +10,45 @@
 }
 
 .child_div1 {
-	width: calc(600 * 1.0px);
-	height: calc(700 * 1.0px);
+	width: calc(600 * 1.2px);
+	height: calc(700 * 1.2px);
 	float: left;
 }
 
 .canvas_container {
-	width: calc(600 * 1.0px);
-	height: calc(600 * 1.0px);
+	width: calc(600 * 1.2px);
+	height: calc(600 * 1.2px);
 	border-style: dashed;
 	border-width: 2px;
 }
 
 .brush_container {
-	width: calc(600 * 1.0px);
-	height: calc(100 * 1.0px);
+	width: calc(600 * 1.2px);
+	height: calc(100 * 1.2px);
 	/*border-style: dashed;
 	border-width: 2px;*/
 }
 
 #brush {
-	width: calc((600-5) * 1.0px);
-	height: calc(80 * 1.0px);
+	width: calc((600-5) * 1.2px);
+	height: calc(80 * 1.2px);
 
 }
 
 .child_div2 {
-	width: calc(320 * 1.0px);
-	max-height: calc(600 * 1.0px);
+	width: calc(320 * 1.2px);
+	max-height: calc(600 * 1.2px);
 	float: right;
 	overflow-y: scroll;
 }
 
 .child_div2_child_mid {
-	width: calc(320 * 1.0px);
+	width: calc(320 * 1.2px);
 	height: 30px;
 }
 
 .infotext_container {
-	width: calc(320 * 1.0px);
+	width: calc(320 * 1.2px);
 }
 
 p.sidebar-text {

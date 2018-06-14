@@ -26,15 +26,17 @@ context.scale(devicePixelRatio, devicePixelRatio)
 var simulation = d3.forceSimulation()
   .force("link", d3.forceLink().id(function(d) { return d.id; }))
   .force("charge", d3.forceManyBody())
-  .force("center", d3.forceCenter(canvas_width / (1 * 2), canvas_height / (1 * 2)))
-  .force("x", d3.forceX(canvas_width / (1 * 2)))
-  .force("y", d3.forceY(canvas_height / (1 * 2)));
+  .force("center", d3.forceCenter(canvas_width / 2, canvas_height / 2))
+  .force("x", d3.forceX(canvas_width / 2))
+  .force("y", d3.forceY(canvas_height / 2));
 
-simulation.force("x").strength(0.05);
-simulation.force("y").strength(0.05);
+simulation.force("x").strength(0.1);
+simulation.force("y").strength(0.1);
 
 tmin = new Date("2018-05-28 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
+
+focusLabel = undefined;
 
 d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw", function(data){
 	
@@ -42,7 +44,8 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
 	var data = data
     .filter(l => tmin < new Date(l.datetime) && new Date(l.datetime) < tmax)
     .map(l => { return {"source": l.source, "target": l.target, "datetime": new Date(l.datetime)}})
-	graph_daddy = convertToJson(data)
+	
+  graph_daddy = convertToJson(data)
 	graph_active = _.clone(graph_daddy)
 
   simulation
@@ -59,6 +62,16 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
   	.on("start", dragstarted)
   	.on("drag", dragged)
   	.on("end", dragended));
+
+  canvas.onmousemove = function(e){
+      focusLabel = simulation.find(e.offsetX, e.offsetY).id;
+      if (simulation.alpha() < 0.01) {
+        simulation.alpha(0.01).restart();
+      }
+    }
+  canvas.onmouseout = function(e){
+      focusLabel = undefined
+    }
 
   var dates = data.map(d => {return d.datetime})
 
@@ -92,7 +105,7 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
 
   brush_svg.append("g")
     .call(brush)
-    .call(brush.move, [parseInt(brush_width * 0.1), parseInt(brush_width * 0.9)]);
+    .call(brush.move, [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]);
   
   // Animate brush movement
   var inc = 0;
@@ -108,7 +121,7 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
         brush_svg
           .call(brush)
           .transition()
-          .call(brush.move, [parseInt(brush_width*0.1), parseInt(brush_width*0.9)]);
+          .call(brush.move, [parseInt(brush_width*0.9), parseInt(brush_width*1.0)]);
       }
       inc += 1;
       if (--i) {          // If i > 0, keep going
@@ -120,7 +133,7 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
   function ticked() {
     context.clearRect(0, 0, canvas_width, canvas_height);
       
-    context.strokeStyle = "black";
+    context.strokeStyle = "#212121";
     context.lineWidth = 2.0;
     context.globalAlpha = 0.3;
     context.globalCompositeOperation = "destination-over"
@@ -132,6 +145,7 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
     context.globalCompositeOperation = "source-over"
 
     graph_active.nodes.forEach(drawNode);
+    graph_active.nodes.forEach(drawLabel);
   }
   
   function dragsubject() {
@@ -177,6 +191,22 @@ function drawNode(d) {
   context.stroke();
 }
 
+function drawLabel(d) {
+  if (d.id == focusLabel) {
+    thisnodesize = d.size**(0.5) * 2;
+    context.beginPath();
+    context.rect(d.x, d.y - 23, d.id.length*11, 20);
+    context.fillStyle = "white";
+    context.fill()
+    context.stroke()
+    context.beginPath()
+    context.fillStyle = "black";
+    context.font = "20px Georgia";
+    context.moveTo(d.x+10, d.y-5);
+    context.fillText(d.id+10, d.x, d.y-5);
+    context.stroke();
+  }
+}
 
 // Brush functions
 // ---------------
