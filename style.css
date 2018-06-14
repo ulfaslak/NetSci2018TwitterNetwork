@@ -30,7 +30,7 @@
 }
 
 #brush {
-	width: calc((600-5) * 1.2px);
+	width: calc((556) * 1.2px);
 	height: calc(80 * 1.2px);
 
 }
@@ -43,7 +43,7 @@
 }
 
 .child_div2_child_mid {
-	width: calc(320 * 1.2px);
+	width: calc(320 * 1.2px)
 	height: 30px;
 }
 
@@ -69,4 +69,10 @@ p.sidebar-text {
 
 .axis--grid .tick--minor line {
   stroke-opacity: 0.5;
+}
+
+#playbutton {
+	width: calc(40 * 1.2px);
+	height: calc(40 * 1.2px);
+	margin-bottom: calc(35 * 1.2px);
 }

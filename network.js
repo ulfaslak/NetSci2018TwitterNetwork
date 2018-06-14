@@ -9,9 +9,8 @@ var canvas_height = canvas.height
 
 // Brush stuff
 var brush_svg = d3.select(document.getElementById("brush")).append("g")
-var brush_div = document.getElementsByClassName("brush_container")[0]
-var brush_width = brush_div.offsetWidth - 5
-var brush_height = brush_div.offsetHeight * 1.0
+var brush_width = document.getElementById("brush").getBoundingClientRect().width
+var brush_height = document.getElementById("brush").getBoundingClientRect().height * 1.0
 
 // Retina canvas rendering    
 var devicePixelRatio = window.devicePixelRatio || 1
@@ -33,7 +32,7 @@ var simulation = d3.forceSimulation()
 simulation.force("x").strength(0.1);
 simulation.force("y").strength(0.1);
 
-tmin = new Date("2018-05-28 00:00:00+00:00")
+tmin = new Date("2018-06-04 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
 focusLabel = undefined;
@@ -106,29 +105,6 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
   brush_svg.append("g")
     .call(brush)
     .call(brush.move, [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]);
-  
-  // Animate brush movement
-  var inc = 0;
-  var steps = brush_width / 100;
-  (function theLoop (i) {
-    setTimeout(function () {
-      if (inc < 94) {
-        brush_svg
-          .call(brush)
-          .transition().duration(20)
-          .call(brush.move, [inc*steps, inc*steps+10*steps]);
-      } else if (inc == 94){
-        brush_svg
-          .call(brush)
-          .transition()
-          .call(brush.move, [parseInt(brush_width*0.9), parseInt(brush_width*1.0)]);
-      }
-      inc += 1;
-      if (--i) {          // If i > 0, keep going
-        theLoop(i);       // Call the loop again, and pass it the current value of i
-      }
-    }, 20);
-  })(95);
 
   function ticked() {
     context.clearRect(0, 0, canvas_width, canvas_height);
@@ -152,6 +128,32 @@ d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b
     return simulation.find(d3.event.x, d3.event.y);
   }
 })
+
+var playbutton = document.getElementById("playbutton")
+playbutton.onclick = function() {
+  // Animate brush movement
+  var inc = 0;
+  var steps = brush_width / 100;
+  (function theLoop (i) {
+    setTimeout(function () {
+      if (inc < 94) {
+        brush_svg
+          .call(brush)
+          .transition().duration(20)
+          .call(brush.move, [inc*steps, inc*steps+10*steps]);
+      } else if (inc == 94){
+        brush_svg
+          .call(brush)
+          .transition()
+          .call(brush.move, [parseInt(brush_width*0.9), parseInt(brush_width*1.0)]);
+      }
+      inc += 1;
+      if (--i) {          // If i > 0, keep going
+        theLoop(i);       // Call the loop again, and pass it the current value of i
+      }
+    }, 20);
+  })(95);
+}
 
 
 // Network functions
