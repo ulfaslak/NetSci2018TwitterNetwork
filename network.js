@@ -8,7 +8,7 @@ var canvas_width = canvas.width
 var canvas_height = canvas.height
 
 // Brush stuff
-var brush_svg = d3.select(document.getElementById("brush")).append("g")
+var brush_svg = d3.select(document.getElementById("brush"))
 var brush_width = document.getElementById("brush").getBoundingClientRect().width
 var brush_height = document.getElementById("brush").getBoundingClientRect().height * 1.0
 
@@ -36,125 +36,150 @@ tmin = new Date("2018-06-04 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
 focusLabel = undefined;
+var selection = [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]
 
-d3.csv("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw", function(data){
-	
-	// Convert links to graph
-	var data = data
-    .filter(l => tmin < new Date(l.datetime) && new Date(l.datetime) < tmax)
-    .map(l => { return {"source": l.source, "target": l.target, "datetime": new Date(l.datetime)}})
-	
-  graph_daddy = convertToJson(data)
-	graph_active = _.clone(graph_daddy)
-
-  simulation
-  	.nodes(graph_active.nodes)
-  	.on("tick", ticked);
-  
-  simulation.force("link")
-  	.links(graph_active.links);
-  
-  d3.select(canvas)
-  	.call(d3.drag()
-  	.container(canvas)
-  	.subject(dragsubject)
-  	.on("start", dragstarted)
-  	.on("drag", dragged)
-  	.on("end", dragended));
-
-  canvas.onmousemove = function(e){
-      focusLabel = simulation.find(e.offsetX, e.offsetY).id;
-      if (simulation.alpha() < 0.01) {
-        simulation.alpha(0.01).restart();
-      }
-    }
-  canvas.onmouseout = function(e){
-      focusLabel = undefined
-    }
-
-  var dates = data.map(d => {return d.datetime})
-
-  x = d3.scaleTime()
-    .domain([_.min(dates), _.max(dates)])
-    .rangeRound([0, brush_width]);
-
-  brush_svg.append("g")
-    .attr("class", "axis axis--grid")
-    .attr("transform", "translate(0," + brush_height * 0.6 + ")")
-    .call(d3.axisBottom(x)
-      .ticks(d3.timeHour, 12) // 12
-      .tickSize(-brush_height)
-      .tickFormat(function() { return null; }))
-    .selectAll(".tick")
-      .classed("tick--minor", function(d) { return d.getHours(); });
-
-  brush_svg.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + brush_height * 0.6 + ")")
-    .call(d3.axisBottom(x)
-      .ticks(d3.timeDay)
-      .tickPadding(0))
-    .attr("text-anchor", null)
-    .selectAll("text")
-    .attr("x", 5);
-
-  brush = d3.brushX()
-    .extent([[0, 0], [brush_width, brush_height]])
-    .on("brush", brushed)
-
-  brush_svg.append("g")
-    .call(brush)
-    .call(brush.move, [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]);
-
-  function ticked() {
-    context.clearRect(0, 0, canvas_width, canvas_height);
-      
-    context.strokeStyle = "#212121";
-    context.lineWidth = 2.0;
-    context.globalAlpha = 0.3;
-    context.globalCompositeOperation = "destination-over"
-    graph_active.links.forEach(drawLink);
+function restart(dataset) {
+  d3.csv(dataset, function(data){
     
-    context.globalAlpha = 1.0
-    context.strokeStyle = "white";
-    context.lineWidth = 1;
-    context.globalCompositeOperation = "source-over"
+    // Convert links to graph
+    var data = data
+      .filter(l => tmin < new Date(l.datetime) && new Date(l.datetime) < tmax)
+      .map(l => { return {"source": l.source, "target": l.target, "datetime": new Date(l.datetime)}})
+    
+    graph_daddy = convertToJson(data)
+    graph_active = _.clone(graph_daddy)
 
-    graph_active.nodes.forEach(drawNode);
-    graph_active.nodes.forEach(drawLabel);
-  }
-  
-  function dragsubject() {
-    return simulation.find(d3.event.x, d3.event.y);
-  }
-})
+    simulation
+      .nodes(graph_active.nodes)
+      .on("tick", ticked);
+    
+    simulation.force("link")
+      .links(graph_active.links);
+    
+    d3.select(canvas)
+      .call(d3.drag()
+      .container(canvas)
+      .subject(dragsubject)
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended));
 
-var playbutton = document.getElementById("playbutton")
-playbutton.onclick = function() {
-  // Animate brush movement
-  var inc = 0;
-  var steps = brush_width / 100;
-  (function theLoop (i) {
-    setTimeout(function () {
-      if (inc < 94) {
-        brush_svg
-          .call(brush)
-          .transition().duration(20)
-          .call(brush.move, [inc*steps, inc*steps+10*steps]);
-      } else if (inc == 94){
-        brush_svg
-          .call(brush)
-          .transition()
-          .call(brush.move, [parseInt(brush_width*0.9), parseInt(brush_width*1.0)]);
+    canvas.onmousemove = function(e){
+        focusLabel = simulation.find(e.offsetX, e.offsetY).id;
+        if (simulation.alpha() < 0.01) {
+          simulation.alpha(0.01).restart();
+        }
       }
-      inc += 1;
-      if (--i) {          // If i > 0, keep going
-        theLoop(i);       // Call the loop again, and pass it the current value of i
+    canvas.onmouseout = function(e){
+        focusLabel = undefined
       }
-    }, 20);
-  })(95);
+
+    var dates = data.map(d => {return d.datetime})
+
+    x = d3.scaleTime()
+      .domain([tmin, _.min([tmax, new Date(Math.floor(Date.now() / 86400e3) * 86400e3 + 86400e3 * 2)])])
+      .rangeRound([0, brush_width]);
+
+    brush_svg.append("g")
+
+    brush_svg.append("g")
+      .attr("class", "axis axis--grid")
+      .attr("transform", "translate(0," + brush_height * 0.6 + ")")
+      .call(d3.axisBottom(x)
+        .ticks(d3.timeHour, 12) // 12
+        .tickSize(-brush_height)
+        .tickFormat(function() { return null; }))
+      .selectAll(".tick")
+        .classed("tick--minor", function(d) { return d.getHours(); });
+
+    brush_svg.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + brush_height * 0.6 + ")")
+      .call(d3.axisBottom(x)
+        .ticks(d3.timeDay)
+        .tickPadding(0))
+      .attr("text-anchor", null)
+      .selectAll("text")
+      .attr("x", 5);
+
+    brush = d3.brushX()
+      .extent([[0, 0], [brush_width, brush_height]])
+      .on("brush", brushed)
+
+    brush_svg.append("g")
+      .call(brush)
+      .call(brush.move, selection);
+
+    function ticked() {
+      context.clearRect(0, 0, canvas_width, canvas_height);
+        
+      context.strokeStyle = "#212121";
+      context.lineWidth = 2.0;
+      context.globalAlpha = 0.3;
+      context.globalCompositeOperation = "destination-over"
+      graph_active.links.forEach(drawLink);
+      
+      context.globalAlpha = 1.0
+      context.strokeStyle = "white";
+      context.lineWidth = 1;
+      context.globalCompositeOperation = "source-over"
+
+      graph_active.nodes.forEach(drawNode);
+      graph_active.nodes.forEach(drawLabel);
+    }
+    
+    function dragsubject() {
+      return simulation.find(d3.event.x, d3.event.y);
+    }
+  })
+
+  var brush_area = brush_width//(brush_width - 10) - (brush_width / 1.5)
+  function brushed() {
+    selection = d3.event.selection;
+    limits = selection.map(x.invert)
+    if ((selection[1] - selection[0]) > brush_area) {
+      // brush is expanding, add nodes from graph_daddy
+      addLinks(limits); 
+    } else if ((selection[1] - selection[0]) < brush_area) {  
+      // Brush is shrinking, remove nodes from graph_active
+      removeLinks(limits);
+    } else {  
+      // Area remains constant (panning)
+      addLinks(limits);
+      removeLinks(limits);
+    }
+    brush_area = selection[1] - selection[0]
+    simulation.alpha(1).restart();
+  }
+
+  var playbutton = document.getElementById("playbutton")
+  playbutton.onclick = function() {
+    // Animate brush movement
+    var inc = 0;
+    var steps = brush_width / 100;
+    (function theLoop (i) {
+      setTimeout(function () {
+        if (inc < 94) {
+          brush_svg
+            .call(brush)
+            .transition().duration(20)
+            .call(brush.move, [inc*steps, inc*steps+10*steps]);
+        } else if (inc == 94){
+          brush_svg
+            .call(brush)
+            .transition()
+            .call(brush.move, selection);
+        }
+        inc += 1;
+        if (--i) {          // If i > 0, keep going
+          theLoop(i);       // Call the loop again, and pass it the current value of i
+        }
+      }, 20);
+    })(95);
+  }
 }
 
+restart("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw/links_likes.csv")
 
 // Network functions
 // -----------------
@@ -216,25 +241,6 @@ function drawLabel(d) {
 
 // Brush functions
 // ---------------
-
-var brush_area = brush_width//(brush_width - 10) - (brush_width / 1.5)
-function brushed() {
-	var selection = d3.event.selection;
-	limits = selection.map(x.invert)
-	if ((selection[1] - selection[0]) > brush_area) {
-    // brush is expanding, add nodes from graph_daddy
-    addLinks(limits); 
-	} else if ((selection[1] - selection[0]) < brush_area) {  
-    // Brush is shrinking, remove nodes from graph_active
-    removeLinks(limits);
-	} else {  
-    // Area remains constant (panning)
-    addLinks(limits);
-    removeLinks(limits);
-  }
-  brush_area = selection[1] - selection[0]
-  simulation.alpha(1).restart();
-}
 
 function addLinks(limits) {
   var active_nodes = []
@@ -319,6 +325,23 @@ function getNodeFromLinks(links, node) {
     }
   }
 }
+
+function toggleActive(e) {
+  if (e.getAttribute("class") != "btnActive") {
+    if (e.getAttribute("class") == "btn") {
+      e.setAttribute("class", "btnActive")
+      for (id of ["likes", "retweets", "mentions"]) {
+        if (id != e.getAttribute("id")) {
+          document.getElementById(id).setAttribute("class", "btn")
+        }
+      }
+    }
+    document.getElementById("brush").innerHTML = ''
+    restart("https://gist.githubusercontent.com/ulfaslak/2686ebe674b761e7947aacd2780b8384/raw/links_" + e.getAttribute("id") + ".csv")
+  }
+
+}
+
 
 Date.prototype.addHours = function(h){
     this.setHours(this.getHours()+h);

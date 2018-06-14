@@ -18,6 +18,7 @@
 .canvas_container {
 	width: calc(600 * 1.2px);
 	height: calc(600 * 1.2px);
+	position: relative;
 	border-style: dashed;
 	border-width: 2px;
 }
@@ -75,4 +76,34 @@ p.sidebar-text {
 	width: calc(40 * 1.2px);
 	height: calc(40 * 1.2px);
 	margin-bottom: calc(35 * 1.2px);
+	cursor: pointer;
+}
+
+#buttons {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 6px 5px;
+}
+
+.btn {
+    font-size: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 300;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.btnActive {
+    font-size: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
 }

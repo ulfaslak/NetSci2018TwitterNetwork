@@ -8,9 +8,14 @@
 	<div class="child_div1">
 		<div class="canvas_container">
 			<canvas id="canvas"></canvas>
+			<div id="buttons">
+				<button id="likes" class="btnActive" onclick="toggleActive(this)">Likes</button>
+				<button id="retweets" class="btn" onclick="toggleActive(this)">Retweets</button>
+				<button id="mentions" class="btn" onclick="toggleActive(this)">Mentions</button>
+			</div>
 		</div>
 		<div class="brush_container">
-			<img src="play-button.svg" id="playbutton" onmouseover="this.style.cursor='pointer';">
+			<img src="play-button.svg" id="playbutton">
 			<svg id="brush"></svg>
 		</div>
 	</div>
