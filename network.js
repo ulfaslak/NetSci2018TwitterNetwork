@@ -203,7 +203,7 @@ function drawLabel(d) {
     context.fillStyle = "black";
     context.font = "20px Georgia";
     context.moveTo(d.x+10, d.y-5);
-    context.fillText(d.id+10, d.x, d.y-5);
+    context.fillText(d.id, d.x, d.y-5);
     context.stroke();
   }
 }
