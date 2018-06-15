@@ -107,3 +107,7 @@ p.sidebar-text {
     -moz-transition: all 0.3s;
     transition: all 0.3s;
 }
+
+#username {
+	font-size: inherit;
+}

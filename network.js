@@ -35,8 +35,13 @@ simulation.force("y").strength(0.1);
 tmin = new Date("2018-06-04 00:00:00+00:00")
 tmax = new Date("2018-07-1 00:00:00+00:00")
 
-focusLabel = undefined;
+
+focusLabel = document.getElementById('username').value;
 var selection = [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]
+
+document.getElementById('username').addEventListener('keyup', function() {
+  focusLabel = document.getElementById('username').value;
+})
 
 function restart(dataset) {
   d3.csv(dataset, function(data){
@@ -71,7 +76,7 @@ function restart(dataset) {
         }
       }
     canvas.onmouseout = function(e){
-        focusLabel = undefined
+        focusLabel = document.getElementById('username').value;
       }
 
     var dates = data.map(d => {return d.datetime})
