@@ -77,7 +77,7 @@ function restart(dataset) {
     var dates = data.map(d => {return d.datetime})
 
     x = d3.scaleTime()
-      .domain([tmin, _.min([tmax, new Date(Math.floor(Date.now() / 86400e3) * 86400e3 + 86400e3 * 2)])])
+      .domain([tmin, _.min([tmax, new Date(Date.now())])])
       .rangeRound([0, brush_width]);
 
     brush_svg.append("g")
