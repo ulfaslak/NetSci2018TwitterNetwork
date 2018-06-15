@@ -41,6 +41,10 @@ var selection = [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]
 
 document.getElementById('username').addEventListener('keyup', function() {
   focusLabel = document.getElementById('username').value;
+  if (simulation.alpha() < 0.01) {
+    simulation.alpha(0.01).restart();
+  }
+
 })
 
 function restart(dataset) {
@@ -218,7 +222,7 @@ function drawNode(d) {
   context.beginPath();
   context.moveTo(d.x + thisnodesize, d.y);
   context.arc(d.x, d.y, thisnodesize, 0, 2 * Math.PI);
-  if (d.id == focusLabel) {
+  if (d.id.toLowerCase() == focusLabel.toLowerCase()) {
     context.fillStyle = "#2980b9"
   } else {
     context.fillStyle = "black";
@@ -228,7 +232,7 @@ function drawNode(d) {
 }
 
 function drawLabel(d) {
-  if (d.id == focusLabel) {
+  if (d.id.toLowerCase() == focusLabel.toLowerCase()) {
     thisnodesize = d.size**(0.5) * 2;
     context.beginPath();
     context.rect(d.x, d.y - 30, d.id.length*12, 25);
