@@ -33,11 +33,11 @@ simulation.force("x").strength(0.1);
 simulation.force("y").strength(0.1);
 
 tmin = new Date("2018-06-04 00:00:00+00:00")
-tmax = new Date("2018-07-1 00:00:00+00:00")
+tmax = new Date("2018-06-20 00:00:00+00:00")
 
 
 focusLabel = document.getElementById('username').value;
-var selection = [parseInt(brush_width * 0.9), parseInt(brush_width * 1.0)]
+var selection = [parseInt(brush_width * 0.3732), parseInt(brush_width * 0.7479)]
 
 document.getElementById('username').addEventListener('keyup', function() {
   focusLabel = document.getElementById('username').value;
@@ -86,7 +86,7 @@ function restart(dataset) {
     var dates = data.map(d => {return d.datetime})
 
     x = d3.scaleTime()
-      .domain([tmin, _.min([tmax, new Date(Date.now())])])
+      .domain([tmin, tmax])
       .rangeRound([0, brush_width]);
 
     brush_svg.append("g")
@@ -165,6 +165,7 @@ function restart(dataset) {
   playbutton.onclick = function() {
     // Animate brush movement
     var inc = 0;
+    var selection_0 = _.clone(selection)
     var steps = brush_width / 100;
     (function theLoop (i) {
       setTimeout(function () {
@@ -172,12 +173,12 @@ function restart(dataset) {
           brush_svg
             .call(brush)
             .transition().duration(20)
-            .call(brush.move, [inc*steps, inc*steps+10*steps]);
+            .call(brush.move, [inc*steps, inc*steps+42]);
         } else if (inc == 94){
           brush_svg
             .call(brush)
             .transition()
-            .call(brush.move, selection);
+            .call(brush.move, selection_0);
         }
         inc += 1;
         if (--i) {          // If i > 0, keep going

@@ -111,3 +111,13 @@ p.sidebar-text {
 #username {
 	padding: 5px;
 }
+
+/* unvisited link */
+a:link {
+    color: #2c3e50;
+}
+
+/* visited link */
+a:visited {
+    color: #2c3e50;
+}
